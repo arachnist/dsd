@@ -1,0 +1,13 @@
+---
+statusbar:
+    update_code: Xname.xname $a.join " "
+items:
+    - item:
+        name: datetime
+        period: 1
+        code: DateTime.now.to_s
+    - item:
+        name: load
+        period: 5
+        code: File.read("/proc/loadavg").split[0..2].join " "
+
