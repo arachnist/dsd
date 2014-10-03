@@ -22,15 +22,16 @@ class ObservableArray < Array
     end
 end
 
-class String
-    def to_proc
-        eval "Proc.new { |*args| #{self} }"
+def parse_config(h)
+    $a = eval("ObservableArray.new { #{h["statusbar"]["update_code"]} }")
+
+    h["statusbar"]["items"].each.with_index do |item, index|
+        eval("EM.add_periodic_timer(#{item["item"]["period"]}) { $a[#{index}] = #{item["item"]["code"]} }")
     end
 end
 
-$a = ObservableArray.new { Xname.xname $a.join " " }
+h = YAML.parse(File.open(ENV["HOME"] + "/.dsd.conf").read).to_ruby
 
 EM.run do
-    EM.add_periodic_timer(1) { $a[0] = DateTime.now.to_s }
-    EM.add_periodic_timer(5) { $a[1] = File.read("/proc/loadavg").split[0..2].join " " }
+    parse_config(h)
 end
