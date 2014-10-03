@@ -3,6 +3,7 @@
 require 'eventmachine'
 require 'date'
 require 'ffi'
+require 'yaml'
 
 module Xname
     extend FFI::Library
@@ -18,6 +19,12 @@ class ObservableArray < Array
     def []=(index, value)
         @callback.call
         super(index, value)
+    end
+end
+
+class String
+    def to_proc
+        eval "Proc.new { |*args| #{self} }"
     end
 end
 
