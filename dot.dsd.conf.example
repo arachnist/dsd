@@ -1,6 +1,6 @@
 ---
 statusbar:
-    update_code: Xname.xname $a.join " "
+    update_code: Xname.xname $a.reverse.join " | "
     items:
         - item:
             name: datetime
@@ -10,4 +10,12 @@ statusbar:
             name: load
             period: 5
             code: File.read("/proc/loadavg").split[0..2].join " "
+        - item:
+            name: power_level
+            period: 30
+            code: File.read("/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0A:00/power_supply/BAT0/capacity").strip + "%"
+        - item:
+            name: power_state
+            period: 1
+            code: File.read("/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0A:00/power_supply/BAT0/status").strip
 
