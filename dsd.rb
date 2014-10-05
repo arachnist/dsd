@@ -5,6 +5,7 @@ require 'date'
 require 'ffi'
 require 'yaml'
 require 'trollop'
+require 'daemons'
 
 module Xname
     extend FFI::Library
@@ -33,9 +34,12 @@ end
 
 opts = Trollop::options do
     opt :config, "Configuration file", :type => :io, :default => File.open("#{ENV["HOME"]}/.dsd.conf")
+    opt :daemon, "Daemonize on startup", :type => :flag, :default => true
 end
 
 h = YAML.parse(opts[:config].read).to_ruby
+
+Daemons.daemonize({:app_name => "dsd"}) if opts[:daemon]
 
 EM.run do
     parse_config(h)

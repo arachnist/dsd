@@ -12,6 +12,7 @@ See dot.dsd.conf.example for an example.
  * ffi
  * libxname (https://github.com/Igneous/libxname)
  * trollop
+ * daemonize
 
 ## License
 MIT, see LICENSE file.
