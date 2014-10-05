@@ -4,6 +4,7 @@ require 'eventmachine'
 require 'date'
 require 'ffi'
 require 'yaml'
+require 'trollop'
 
 module Xname
     extend FFI::Library
@@ -30,7 +31,11 @@ def parse_config(h)
     end
 end
 
-h = YAML.parse(File.open(ENV["HOME"] + "/.dsd.conf").read).to_ruby
+opts = Trollop::options do
+    opt :config, "Configuration file", :type => :io, :default => File.open("#{ENV["HOME"]}/.dsd.conf")
+end
+
+h = YAML.parse(opts[:config].read).to_ruby
 
 EM.run do
     parse_config(h)

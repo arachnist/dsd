@@ -11,6 +11,7 @@ See dot.dsd.conf.example for an example.
  * eventmachine
  * ffi
  * libxname (https://github.com/Igneous/libxname)
+ * trollop
 
 ## License
 MIT, see LICENSE file.
