@@ -7,6 +7,8 @@ require 'yaml'
 require 'trollop'
 require 'daemons'
 
+require_relative 'em-irb'
+
 module Xname
     extend FFI::Library
     ffi_lib 'xname'
@@ -29,6 +31,11 @@ def parse_config(h)
 
     h["statusbar"]["items"].each.with_index do |item, index|
         eval("EM.add_periodic_timer(#{item["item"]["period"]}) { $a[#{index}] = #{item["item"]["code"]} }")
+    end
+
+    if h["repl"] then
+        IRB.setup(nil)
+        EventMachine::start_server '127.0.0.1', h["repl"]["port"], EM::Irb
     end
 end
 
