@@ -7,7 +7,7 @@ require 'yaml'
 require 'trollop'
 require 'daemons'
 
-require_relative 'em-irb'
+require_relative 'em-simplerepl'
 
 module Xname
     extend FFI::Library
@@ -33,10 +33,7 @@ def parse_config(h)
         eval("EM.add_periodic_timer(#{item["item"]["period"]}) { $a[#{index}] = #{item["item"]["code"]} }")
     end
 
-    if h["repl"] then
-        IRB.setup(nil)
-        EventMachine::start_server '127.0.0.1', h["repl"]["port"], EM::Irb
-    end
+    EventMachine::start_server '127.0.0.1', h["repl"]["port"], SimpleRepl
 end
 
 opts = Trollop::options do

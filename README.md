@@ -13,7 +13,6 @@ See dot.dsd.conf.example for an example.
  * libxname (https://github.com/Igneous/libxname)
  * trollop
  * daemonize
- * em-synchrony
 
 ## License
 MIT, see LICENSE file.
