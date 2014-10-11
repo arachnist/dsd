@@ -18,4 +18,5 @@ statusbar:
             name: power_state
             period: 1
             code: File.read("/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0A:00/power_supply/BAT0/status").strip
-
+repl:
+    port: 1234
