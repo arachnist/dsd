@@ -26,26 +26,28 @@ class ObservableArray < Array
     end
 end
 
-class DSD
-    attr_accessor :values
+class DSD < ObservableArray
     attr_accessor :timers
 
-    def initialize(h = {})
-        @values = ObservableArray.new { Xname.xname @values.reverse.join " | " }
+    def initialize(configuration, &callback)
+        @callback = callback
 
-        @timers = []
+        @timers = {}
 
-        h["items"].each.with_index do |item, index|
-            @timers << EM.add_periodic_timer(item["period"]) do
-                @values[index] = case item["type"]
-                                 when "time"
-                                     time item["format"]
-                                 when "file"
-                                     file item["path"], item["unit"]
-                                 when "array_from_file"
-                                     array_from_file item["path"], item["range"]
-                                 end
-            end
+        configuration["items"].each.with_index do |item, index|
+            item = item["item"]
+            @timers.merge!({
+                item["name"].to_sym => EM.add_periodic_timer(item["period"]) do
+                    case item["type"]
+                    when "time"
+                        self[index] = time item["format"]
+                    when "file"
+                        self[index] = file item["path"], item["unit"]
+                    when "array_from_file"
+                        self[index] = array_from_file item["path"], item["range"]
+                    end
+                end
+            })
         end
     end
 
@@ -59,7 +61,7 @@ class DSD
 
     def array_from_file(path, range)
         ends = range.split('..').map { |s| Integer(s) }
-        File.read(path).strip.split[ends[0]..ends[1]]
+        File.read(path).strip.split[ends[0]..ends[1]].join " "
     end
 end
 
