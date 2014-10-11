@@ -26,22 +26,41 @@ class ObservableArray < Array
     end
 end
 
-module DSD
+class DSD
+    attr_accessor :values
+    attr_accessor :timers
+
+    def initialize(h = {})
+        @values = ObservableArray.new { Xname.xname @values.reverse.join " | " }
+
+        @timers = []
+
+        h["items"].each.with_index do |item, index|
+            @timers << EM.add_periodic_timer(item["period"]) do
+                @values[index] = case item["type"]
+                                 when "time"
+                                     time item["format"]
+                                 when "file"
+                                     file item["path"], item["unit"]
+                                 when "array_from_file"
+                                     array_from_file item["path"], item["range"]
+                                 end
+            end
+        end
+    end
+
     def time(format = "%Y-%m-%d %H:%M:%S")
         DateTime.now.strftime format
     end
-    module_function :time
 
     def file(path, unit = "")
         File.read(path).strip + unit
     end
-    module_function :file
 
     def array_from_file(path, range)
         ends = range.split('..').map { |s| Integer(s) }
         File.read(path).strip.split[ends[0]..ends[1]]
     end
-    module_function :array_from_file
 end
 
 def initialize_statusbar(h)
