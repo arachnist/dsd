@@ -26,6 +26,24 @@ class ObservableArray < Array
     end
 end
 
+module DSD
+    def time(format = "%Y-%m-%d %H:%M:%S")
+        DateTime.now.strftime format
+    end
+    module_function :time
+
+    def file(path, unit = "")
+        File.read(path).strip + unit
+    end
+    module_function :file
+
+    def array_from_file(path, range)
+        ends = range.split('..').map { |s| Integer(s) }
+        File.read(path).strip.split[ends[0]..ends[1]]
+    end
+    module_function :array_from_file
+end
+
 def initialize_statusbar(h)
     $a = eval("ObservableArray.new { #{h["statusbar"]["update_code"]} }")
 
