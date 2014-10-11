@@ -39,11 +39,12 @@ end
 opts = Trollop::options do
     opt :config, "Configuration file", :type => :io, :default => File.open("#{ENV["HOME"]}/.dsd.conf")
     opt :daemon, "Daemonize on startup", :type => :flag, :default => true
+    opt :debug, "Save debug log at dsd.log", :type => :flag, :default => false
 end
 
 h = YAML.parse(opts[:config].read).to_ruby
 
-Daemons.daemonize({:app_name => "dsd"}) if opts[:daemon]
+Daemons.daemonize({:app_name => "dsd", :backtrace => opts[:debug], :ontop => not(opts[:daemon])})
 
 EM.run do
     parse_config(h)
