@@ -65,14 +65,6 @@ class DSD < ObservableArray
     end
 end
 
-def initialize_statusbar(h)
-    $a = eval("ObservableArray.new { #{h["statusbar"]["update_code"]} }")
-
-    h["statusbar"]["items"].each.with_index do |item, index|
-        eval("EM.add_periodic_timer(#{item["item"]["period"]}) { $a[#{index}] = #{item["item"]["code"]} }")
-    end
-end
-
 opts = Trollop::options do
     opt :config, "Configuration file", :type => :io, :default => File.open("#{ENV["HOME"]}/.dsd.conf")
     opt :daemon, "Daemonize on startup", :type => :flag, :default => true
@@ -80,11 +72,11 @@ opts = Trollop::options do
     opt :repl, "Start a repl", :type => :flag, :default => true
 end
 
-h = YAML.parse(opts[:config].read).to_ruby
+ConfigHash = YAML.parse(opts[:config].read).to_ruby
 
 Daemons.daemonize({:app_name => "dsd", :backtrace => opts[:debug], :ontop => not(opts[:daemon])})
 
 EM.run do
-    initialize_statusbar(h)
-    EventMachine::start_server '127.0.0.1', h["repl"]["port"], SimpleRepl if opts[:repl]
+    $statusbar = DSD.new(ConfigHash["statusbar"]) { Xname.xname $statusbar.reverse.join " | " }
+    EventMachine::start_server '127.0.0.1', ConfigHash["repl"]["port"], SimpleRepl if opts[:repl]
 end
