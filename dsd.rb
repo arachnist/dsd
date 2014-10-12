@@ -23,8 +23,9 @@ class ObservableArray < Array
     end
 
     def []=(index, value)
-        @callback.call unless @suppress
         super(index, value)
+        @callback.call unless @suppress
+        self
     end
 end
 
