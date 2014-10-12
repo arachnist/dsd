@@ -16,14 +16,14 @@ module Xname
 end
 
 class ObservableArray < Array
-    attr_accessor :callback
+    attr_accessor :callback, :suppress
 
     def initialize(&callback)
         @callback = callback
     end
 
     def []=(index, value)
-        @callback.call
+        @callback.call unless @suppress
         super(index, value)
     end
 end
@@ -76,6 +76,10 @@ ConfigHash = YAML.parse(opts[:config].read).to_ruby
 Daemons.daemonize({:app_name => "dsd", :backtrace => opts[:debug], :ontop => not(opts[:daemon])})
 
 EM.run do
-    $statusbar = DSD.new(ConfigHash["statusbar"]) { Xname.xname $statusbar.reverse.join " | " }
+    $statusbar = DSD.new(ConfigHash["statusbar"]) do
+        $statusbar.suppress = true
+        Xname.xname $statusbar.reverse.join " | "
+        EM.add_timer(0.5) { $statusbar.suppress = false }
+    end
     EventMachine::start_server '127.0.0.1', ConfigHash["repl"]["port"], SimpleRepl if opts[:repl]
 end
