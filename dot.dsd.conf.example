@@ -6,30 +6,35 @@ statusbar:
             name: datetime
             period: 1
             type: time
-            format: "%Y-%m-%d %H:%M:%S"
+            args:
+                format: "%Y-%m-%d %H:%M:%S"
         - item:
             name: load
             period: 5
             type: array_from_file
-            path: /proc/loadavg
-            range: 0..2
+            args:
+                path: /proc/loadavg
+                range: 0..2
         - item:
             name: power_level
             period: 5
             type: file
-            path: /sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0A:00/power_supply/BAT0/capacity
-            unit: "%"
+            args:
+                path: /sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0A:00/power_supply/BAT0/capacity
+                unit: "%"
         - item:
             name: power_state
             period: 1
             type: file
-            path: /sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0A:00/power_supply/BAT0/status
-            unit: ""
+            args:
+                path: /sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0A:00/power_supply/BAT0/status
+                unit: ""
         - item:
             name: cpu_temp
             period: 1
             type: formatted_string_from_file
-            path: /sys/class/hwmon/hwmon1/temp1_input
-            format: "%.2s C"
+            args:
+                path: /sys/class/hwmon/hwmon1/temp1_input
+                format: "%.2s C"
 repl:
     port: 1234
