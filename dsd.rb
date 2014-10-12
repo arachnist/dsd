@@ -16,6 +16,8 @@ module Xname
 end
 
 class ObservableArray < Array
+    attr_accessor :callback
+
     def initialize(&callback)
         @callback = callback
     end
