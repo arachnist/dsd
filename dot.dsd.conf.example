@@ -1,6 +1,5 @@
 ---
 statusbar:
-    update_code: Xname.xname $a.reverse.join " | "
     items:
         - item:
             name: datetime
