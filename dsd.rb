@@ -40,36 +40,27 @@ class DSD < ObservableArray
             item = item["item"]
             @timers.merge!({
                 item["name"].to_sym => EM.add_periodic_timer(item["period"]) do
-                    case item["type"]
-                    when "time"
-                        self[index] = time item["format"]
-                    when "file"
-                        self[index] = file item["path"], item["unit"]
-                    when "array_from_file"
-                        self[index] = array_from_file item["path"], item["range"]
-                    when "formatted_string_from_file"
-                        self[index] = formatted_string_from_file item["path"], item["format"]
-                    end
+                    self[index] = self.send item["type"], item["args"]
                 end
             })
         end
     end
 
-    def time(format = "%Y-%m-%d %H:%M:%S")
-        DateTime.now.strftime format
+    def time(hash = {"format" => "%Y-%m-%d %H:%M:%S"})
+        DateTime.now.strftime hash["format"]
     end
 
-    def file(path, unit = "")
-        File.read(path).strip + unit
+    def file(hash = {})
+        File.read(hash["path"]).strip + hash["unit"]
     end
 
-    def array_from_file(path, range)
-        ends = range.split('..').map { |s| Integer(s) }
-        File.read(path).strip.split[ends[0]..ends[1]].join " "
+    def array_from_file(hash = {})
+        ends = hash["range"].split('..').map { |s| Integer(s) }
+        File.read(hash["path"]).strip.split[ends[0]..ends[1]].join " "
     end
 
-    def formatted_string_from_file(path, format)
-        sprintf format, File.read(path).strip
+    def formatted_string_from_file(hash = {})
+        sprintf hash["format"], File.read(hash["path"]).strip
     end
 end
 
