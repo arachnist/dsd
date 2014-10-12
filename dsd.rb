@@ -45,6 +45,8 @@ class DSD < ObservableArray
                         self[index] = file item["path"], item["unit"]
                     when "array_from_file"
                         self[index] = array_from_file item["path"], item["range"]
+                    when "formatted_string_from_file"
+                        self[index] = formatted_string_from_file item["path"], item["format"]
                     end
                 end
             })
@@ -62,6 +64,10 @@ class DSD < ObservableArray
     def array_from_file(path, range)
         ends = range.split('..').map { |s| Integer(s) }
         File.read(path).strip.split[ends[0]..ends[1]].join " "
+    end
+
+    def formatted_string_from_file(path, format)
+        sprintf format, File.read(path).strip
     end
 end
 
